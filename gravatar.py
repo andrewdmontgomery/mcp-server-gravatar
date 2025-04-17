@@ -2,6 +2,7 @@ import hashlib
 from typing import Any
 from mcp.server.fastmcp import FastMCP
 from openapi_client import Configuration, ApiClient, ProfilesApi
+from openapi_client.api.avatars_api import AvatarsApi
 import os
 import json
 
@@ -40,6 +41,9 @@ _config.access_token = token
 _api_client = ApiClient(configuration=_config)
 profiles_api = ProfilesApi(_api_client)
 
+# Initialize the AvatarsApi client for listing avatars
+avatars_api = AvatarsApi(_api_client)
+
 
 @mcp.tool(name="get_profile_by_email")
 async def get_profile(email: str) -> dict[str, Any]:
@@ -76,6 +80,25 @@ async def get_profile_by_hash(hash: str) -> dict[str, Any]:
     if hasattr(profile, "to_dict"):
         return profile.to_dict()
     return profile
+
+
+@mcp.tool(name="get_avatars")
+async def get_avatars() -> list[dict[str, Any]]:
+    """
+    List all avatars for the authenticated user in JSON-friendly format.
+    """
+    avatars = avatars_api.get_avatars()
+    result = []
+    for avatar in avatars:
+        if hasattr(avatar, "model_dump"):
+            # Pydantic v2 JSON-compatible dump (converts datetime to strings)
+            result.append(avatar.model_dump(
+                mode="json", by_alias=True, exclude_unset=True))
+        elif hasattr(avatar, "to_dict"):
+            result.append(avatar.to_dict())
+        else:
+            result.append(avatar)
+    return result
 
 if __name__ == "__main__":
     # Run the MCP server over stdio
