@@ -23,30 +23,41 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
+
 class Avatar(BaseModel):
     """
     An avatar that the user has already uploaded to their Gravatar account.
-    """ # noqa: E501
+    """  # noqa: E501
     image_id: StrictStr = Field(description="Unique identifier for the image.")
     image_url: StrictStr = Field(description="Image URL")
     rating: StrictStr = Field(description="Rating associated with the image.")
-    alt_text: StrictStr = Field(description="Alternative text description of the image.")
-    selected: Optional[StrictBool] = Field(default=None, description="Whether the image is currently selected as the provided selected email's avatar.")
-    updated_date: datetime = Field(description="Date and time when the image was last updated.")
-    __properties: ClassVar[List[str]] = ["image_id", "image_url", "rating", "alt_text", "selected", "updated_date"]
+    alt_text: StrictStr = Field(
+        description="Alternative text description of the image.")
+    selected: Optional[StrictBool] = Field(
+        default=None, description="Whether the image is currently selected as the provided selected email's avatar.")
+    updated_date: datetime = Field(
+        description="Date and time when the image was last updated.")
+    __properties: ClassVar[List[str]] = [
+        "image_id", "image_url", "rating", "alt_text", "selected", "updated_date"]
 
     @field_validator('rating')
     def rating_validate_enum(cls, value):
         """Validates the enum"""
         if value not in set(['G', 'PG', 'R', 'X']):
-            raise ValueError("must be one of enum values ('G', 'PG', 'R', 'X')")
+            raise ValueError(
+                "must be one of enum values ('G', 'PG', 'R', 'X')")
         return value
 
     @field_validator('updated_date')
     def updated_date_validate_regular_expression(cls, value):
         """Validates the regular expression"""
+        # If already a datetime, skip regex validation
+        if isinstance(value, datetime):
+            return value
+        # Otherwise, ensure it's an ISO-style string
         if not re.match(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", value):
-            raise ValueError(r"must validate the regular expression /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/")
+            raise ValueError(
+                r"must validate the regular expression /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/")
         return value
 
     model_config = ConfigDict(
@@ -54,7 +65,6 @@ class Avatar(BaseModel):
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -108,5 +118,3 @@ class Avatar(BaseModel):
             "updated_date": obj.get("updated_date")
         })
         return _obj
-
-
