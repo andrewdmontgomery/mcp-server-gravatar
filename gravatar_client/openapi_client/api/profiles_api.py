@@ -20,6 +20,7 @@ from pydantic import Field, StrictStr
 from typing import Any, Dict
 from typing_extensions import Annotated
 from openapi_client.models.profile import Profile
+from openapi_client.models import AssociatedResponse
 
 from openapi_client.api_client import ApiClient, RequestSerialized
 from openapi_client.api_response import ApiResponse
