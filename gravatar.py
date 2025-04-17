@@ -32,6 +32,14 @@ def _load_token(config_path: str) -> str:
     return token
 
 
+def _hash_email(email: str) -> str:
+    """
+    Normalize an email address and return its SHA256 hash.
+    """
+    normalized = email.strip().lower()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
 # Load the access token
 token = _load_token(CONFIG_PATH)
 
@@ -46,16 +54,17 @@ avatars_api = AvatarsApi(_api_client)
 
 
 @mcp.tool(name="get_profile_by_email")
-async def get_profile(email: str) -> dict[str, Any]:
+async def get_profile_by_email(email: str) -> dict[str, Any]:
     """
     Fetch Gravatar profile for a given email address.
 
     Args:
         email: User's email address.
+
+    Returns:
+        dict[str, Any]: The JSON-deserialized Gravatar profile object.
     """
-    # Normalize and hash the email
-    normalized = email.strip().lower()
-    profile_id = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+    profile_id = _hash_email(email)
 
     # Fetch the profile using the raw ProfilesApi client
     profile = profiles_api.get_profile_by_id(profile_id)
@@ -75,6 +84,9 @@ async def get_profile_by_hash(hash: str) -> dict[str, Any]:
 
     Args:
         hash: SHA256 hash of the lowercase email string.
+
+    Returns:
+        dict[str, Any]: The JSON-deserialized Gravatar profile object.
     """
     profile = profiles_api.get_profile_by_id(hash)
     if hasattr(profile, "to_dict"):
@@ -83,11 +95,21 @@ async def get_profile_by_hash(hash: str) -> dict[str, Any]:
 
 
 @mcp.tool(name="get_avatars")
-async def get_avatars() -> list[dict[str, Any]]:
+async def get_avatars(selected_email_hash: str | None = None) -> list[dict[str, Any]]:
     """
     List all avatars for the authenticated user in JSON-friendly format.
+
+    Args:
+        selected_email_hash: Optional SHA256 hash of an email to mark that avatar as selected.
+
+    Returns:
+        list[dict[str, Any]]: A list of avatar metadata dictionaries.
     """
-    avatars = avatars_api.get_avatars()
+    if selected_email_hash is not None:
+        avatars = avatars_api.get_avatars(
+            selected_email_hash=selected_email_hash)
+    else:
+        avatars = avatars_api.get_avatars()
     result = []
     for avatar in avatars:
         if hasattr(avatar, "model_dump"):
@@ -99,6 +121,37 @@ async def get_avatars() -> list[dict[str, Any]]:
         else:
             result.append(avatar)
     return result
+
+
+@mcp.tool(name="get_selected_avatar_as_image")
+async def get_selected_avatar_as_image(email: str | None = None) -> list[bytes]:
+    """
+    Fetch and return the raw image bytes for the selected avatar.
+
+    Args:
+        email: User's email address to determine which avatar is selected.
+
+    Returns:
+        list[bytes]: A single-element list containing the selected avatar image bytes.
+    """
+    # Reuse the metadata tool to get avatar URLs
+    selected_hash = _hash_email(email)
+    avatars = await get_avatars(selected_email_hash=selected_hash)
+    images: list[bytes] = []
+    # TODO: Use a proper CA for SSL certificate validation
+    async with httpx.AsyncClient(verify=False) as client:
+        for avatar in avatars:
+            if not avatar.get("selected"):
+                continue
+            url = avatar.get("image_url")
+            if not url:
+                continue
+            response = await client.get(url)
+            response.raise_for_status()
+            images.append(response.content)
+            break
+    return images
+
 
 if __name__ == "__main__":
     # Run the MCP server over stdio
