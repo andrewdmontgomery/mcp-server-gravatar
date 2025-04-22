@@ -1,12 +1,10 @@
 import httpx
+from typing import overload, Literal, Union, Any
 
-from typing import Any
 from mcp.server.fastmcp import FastMCP
+from openapi_client.models.profile import Profile
 
 from gravatar_client import client
-
-from typing import overload, Literal, Union, Any
-from openapi_client.models.profile import Profile
 
 # Initialize FastMCP server
 mcp = FastMCP("gravatar")
