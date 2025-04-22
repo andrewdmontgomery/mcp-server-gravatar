@@ -11,6 +11,7 @@ from gravatar import (
     get_avatars,
     get_selected_avatar_as_image,
     get_profile_field_with_hash,
+    get_profile_field_with_email,
 )
 
 # Ensure config path is set
@@ -60,6 +61,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Name of the profile field to return"
     )
 
+    sp = subparsers.add_parser(
+        "get_profile_field_with_email", help="Fetch a single field from a profile by email"
+    )
+    sp.add_argument(
+        "--email", required=True, help="User's email address"
+    )
+    sp.add_argument(
+        "--field", required=True, help="Name of the profile field to return"
+    )
+
     return parser
 
 
@@ -80,6 +91,8 @@ async def run_command(args: argparse.Namespace):
         return await get_selected_avatar_as_image(args.email)
     elif cmd == "get_profile_field_with_hash":
         return await get_profile_field_with_hash(args.profileIdentifier, args.field)
+    elif cmd == "get_profile_field_with_email":
+        return await get_profile_field_with_email(args.email, args.field)
     else:
         raise ValueError(f"Unknown command: {cmd}")
 

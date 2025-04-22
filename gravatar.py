@@ -121,6 +121,70 @@ async def get_profile_field_with_hash(
     return profile.get(field)
 
 
+# Type-safe overloads for get_profile_field_with_email
+@overload
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal[
+        "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+        "location", "description", "job_title", "company",
+        "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+        "header_image", "background_color", "last_profile_edit", "registration_date"
+    ]
+) -> str: ...
+
+
+@overload
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal["is_organization"]
+) -> bool: ...
+
+
+@overload
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal["number_verified_accounts"]
+) -> int: ...
+
+
+@overload
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal["verified_accounts", "languages",
+                   "links", "interests", "gallery"]
+) -> list[dict[str, Any]]: ...
+
+
+@overload
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal["payments", "contact_info"]
+) -> dict[str, Any]: ...
+
+
+@mcp.tool(
+    name="get_profile_field_with_email",
+    description="Fetch a specific field from a Gravatar profile by email address."
+)
+async def get_profile_field_with_email(
+    email: str,
+    field: Literal[
+        "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+        "location", "description", "job_title", "company",
+        "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+        "header_image", "background_color", "links", "interests", "payments",
+        "contact_info", "gallery", "number_verified_accounts",
+        "last_profile_edit", "registration_date"
+    ]
+) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
+    """
+    Fetch a specific field from a Gravatar profile by email address.
+    """
+    profile_hash = client.hash_email(email)
+    return await get_profile_field_with_hash(profile_hash, field)
+
+
 @mcp.tool(name="get_avatars")
 async def get_avatars(selected_email_hash: str | None = None) -> list[dict[str, Any]]:
     """
