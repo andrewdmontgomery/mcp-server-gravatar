@@ -10,7 +10,7 @@ from gravatar import (
     get_profile_by_hash,
     get_avatars,
     get_selected_avatar_as_image,
-    get_profile_field,
+    get_profile_field_with_hash,
 )
 
 # Ensure config path is set
@@ -49,7 +49,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--email", required=True, help="User's email address")
 
     sp = subparsers.add_parser(
-        "get_profile_field", help="Fetch a single field from a profile"
+        "get_profile_field_with_hash", help="Fetch a single field from a profile"
     )
     sp.add_argument(
         "--profileIdentifier", required=True,
@@ -78,8 +78,8 @@ async def run_command(args: argparse.Namespace):
         return await get_avatars(selected_email_hash=hash_val)
     elif cmd == "get_selected_avatar_as_image":
         return await get_selected_avatar_as_image(args.email)
-    elif cmd == "get_profile_field":
-        return await get_profile_field(args.profileIdentifier, args.field)
+    elif cmd == "get_profile_field_with_hash":
+        return await get_profile_field_with_hash(args.profileIdentifier, args.field)
     else:
         raise ValueError(f"Unknown command: {cmd}")
 

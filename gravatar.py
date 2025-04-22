@@ -51,9 +51,9 @@ async def get_profile_by_hash(hash: str) -> dict[str, Any]:
     return profile
 
 
-# Type-safe overloads for get_profile_field
+# Type-safe overloads for get_profile_field_with_hash
 @overload
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal[
         "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
@@ -65,21 +65,21 @@ async def get_profile_field(
 
 
 @overload
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal["is_organization"]
 ) -> bool: ...
 
 
 @overload
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal["number_verified_accounts"]
 ) -> int: ...
 
 
 @overload
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal["verified_accounts", "languages",
                    "links", "interests", "gallery"]
@@ -87,7 +87,7 @@ async def get_profile_field(
 
 
 @overload
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal["payments", "contact_info"]
 ) -> dict[str, Any]: ...
@@ -96,10 +96,10 @@ async def get_profile_field(
 
 
 @mcp.tool(
-    name="get_profile_field",
+    name="get_profile_field_with_hash",
     description="Fetch a specific field from a Gravatar profile by its SHA256 identifier."
 )
-async def get_profile_field(
+async def get_profile_field_with_hash(
     profileIdentifier: str,
     field: Literal[
         "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
