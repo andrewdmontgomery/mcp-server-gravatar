@@ -6,6 +6,9 @@ from openapi_client.api.avatars_api import AvatarsApi
 import os
 import json
 
+from typing import overload, Literal, Union, Any
+from openapi_client.models.profile import Profile
+
 # Initialize FastMCP server
 mcp = FastMCP("gravatar")
 
@@ -92,6 +95,76 @@ async def get_profile_by_hash(hash: str) -> dict[str, Any]:
     if hasattr(profile, "to_dict"):
         return profile.to_dict()
     return profile
+
+
+# Type-safe overloads for get_profile_field
+@overload
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal[
+        "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+        "location", "description", "job_title", "company",
+        "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+        "header_image", "background_color", "last_profile_edit", "registration_date"
+    ]
+) -> str: ...
+
+
+@overload
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal["is_organization"]
+) -> bool: ...
+
+
+@overload
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal["number_verified_accounts"]
+) -> int: ...
+
+
+@overload
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal["verified_accounts", "languages",
+                   "links", "interests", "gallery"]
+) -> list[dict[str, Any]]: ...
+
+
+@overload
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal["payments", "contact_info"]
+) -> dict[str, Any]: ...
+
+# Actual tool implementation
+
+
+@mcp.tool(
+    name="get_profile_field",
+    description="Fetch a specific field from a Gravatar profile by its SHA256 identifier."
+)
+async def get_profile_field(
+    profileIdentifier: str,
+    field: Literal[
+        "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+        "location", "description", "job_title", "company",
+        "verified_accounts", "pronunciation", "pronouns", "timezone",
+        "languages", "first_name", "last_name", "is_organization",
+        "header_image", "background_color", "links", "interests", "payments",
+        "contact_info", "gallery", "number_verified_accounts",
+        "last_profile_edit", "registration_date"
+    ]
+) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
+    """
+    Fetch a specific field from a Gravatar profile by its SHA256 identifier.
+    Returns a type-safe union based on the requested field.
+    """
+    profile = await get_profile_by_hash(profileIdentifier)
+
+    # Return the field value or None for optional fields without error
+    return profile.get(field)
 
 
 @mcp.tool(name="get_avatars")
