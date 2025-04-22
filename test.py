@@ -3,12 +3,13 @@ import argparse
 import asyncio
 import os
 
+from gravatar_client import client
+
 from gravatar import (
     get_profile_by_email,
     get_profile_by_hash,
     get_avatars,
     get_selected_avatar_as_image,
-    _hash_email,
     get_profile_field,
 )
 
@@ -70,7 +71,7 @@ async def run_command(args: argparse.Namespace):
         return await get_profile_by_hash(args.hash)
     elif cmd == "get_avatars":
         if args.selected_email:
-            hash_val = _hash_email(args.selected_email)
+            hash_val = client.hash_email(args.selected_email)
         else:
             hash_val = args.selected_email_hash
         print(f"Hash: {hash_val}")
