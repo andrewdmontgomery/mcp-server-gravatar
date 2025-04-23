@@ -32,15 +32,7 @@ A stdio-based Model Context Protocol (MCP) server that provides access to Gravat
 
    This will install all Python dependencies specified in `pyproject.toml` into your active virtual environment.
 
-3. **Set API token via environment variable**
-
-   The Gravatar API key must be supplied via the `GRAVATAR_API_TOKEN` environment variable:
-
-   ```bash
-   export GRAVATAR_API_TOKEN="YOUR_GRAVATAR_API_TOKEN"
-   ```
-
-4. **Generate the OpenAPI client** (if you’ve updated `openapi.yaml`)
+3. **Generate the OpenAPI client** (if you’ve updated `openapi.yaml`)
     
     [!CAUTION]
     There are manual changes that have been applied to the generated code in order to fix issues.  If you re-generate the openapi_client, those changes should be retained._
@@ -50,6 +42,25 @@ A stdio-based Model Context Protocol (MCP) server that provides access to Gravat
    ```
 
    This runs the OpenAPI Generator Docker image and synchronizes the generated `openapi_client` into `src/openapi_client`.
+
+## Configuration
+
+### Usage with Claude Desktop
+
+Add this to your `claude_desktop_config.json`:
+
+<details>
+<summary>Using uvx</summary>
+
+```json
+"mcpServers": {
+  "git": {
+    "command": "uvx",
+    "args": ["--from", "git+https://github.com/andrewdmontgomery/mcp-server-gravatar", "mcp-server-git"]
+  }
+}
+```
+</details>
 
 ## Running the MCP Server
 
