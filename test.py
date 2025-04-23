@@ -3,9 +3,9 @@ import argparse
 import asyncio
 import os
 
-from gravatar_client import client
+from src.mcp_server_gravatar.gravatar_client import client
 
-from gravatar import (
+from src.mcp_server_gravatar.gravatar import (
     get_profile_by_email,
     get_profile_by_hash,
     get_avatars,

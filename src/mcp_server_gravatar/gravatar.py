@@ -4,7 +4,7 @@ from typing import overload, Literal, Union, Any
 from mcp.server.fastmcp import FastMCP
 from openapi_client.models.profile import Profile
 
-from gravatar_client import client
+from .gravatar_client import client
 
 # Initialize FastMCP server
 mcp = FastMCP("gravatar")
@@ -244,6 +244,6 @@ async def get_selected_avatar_as_image(email: str | None = None) -> list[bytes]:
     return images
 
 
-if __name__ == "__main__":
+def serve():
     # Run the MCP server over stdio
     mcp.run(transport="stdio")

@@ -1,7 +1,7 @@
 .PHONY: generate clean
 
 # Directory where the generated code will be output
-GENERATED_DIR = gravatar_client
+GENERATED_DIR = gravatar_api_client
 
 # The OpenAPI spec file
 SPEC_FILE = openapi.yaml
