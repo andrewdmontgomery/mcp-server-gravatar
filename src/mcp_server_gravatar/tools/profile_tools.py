@@ -1,10 +1,9 @@
-from mcp.server.fastmcp import FastMCP
 from typing import overload, Literal, Union, Any
-
+from mcp.server.fastmcp import FastMCP
 from ..gravatar_client import client
 
 
-def register_tools(mcp):
+def register_tools(mcp: FastMCP):
     @mcp.tool(name="get_profile_by_email")
     async def get_profile_by_email(email: str) -> dict[str, Any]:
         """
