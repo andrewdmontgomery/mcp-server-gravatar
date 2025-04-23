@@ -9,6 +9,9 @@ SPEC_FILE = openapi.yaml
 # Docker image for OpenAPI Generator
 DOCKER_IMAGE = openapitools/openapi-generator-cli
 
+inspector:
+	@npx @modelcontextprotocol/inspector uv run mcp-server-gravatar
+
 # Target to generate the Python client using Docker
 generate:
 	@docker run --rm -v $(PWD):/local $(DOCKER_IMAGE) generate -i /local/$(SPEC_FILE) -g python -o /local/$(GENERATED_DIR)
