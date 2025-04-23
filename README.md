@@ -32,7 +32,18 @@ A stdio-based Model Context Protocol (MCP) server that provides access to Gravat
 
    This will install all Python dependencies specified in `pyproject.toml` into your active virtual environment.
 
-3. **Generate the OpenAPI client** (if you’ve updated `openapi.yaml`)
+3. **Set API token via environment variable**
+
+   The Gravatar API key must be supplied via the `GRAVATAR_API_TOKEN` environment variable:
+
+   ```bash
+   export GRAVATAR_API_TOKEN="YOUR_GRAVATAR_API_TOKEN"
+   ```
+
+4. **Generate the OpenAPI client** (if you’ve updated `openapi.yaml`)
+    
+    [!CAUTION]
+    There are manual changes that have been applied to the generated code in order to fix issues.  If you re-generate the openapi_client, those changes should be retained._
 
    ```bash
    make generate
@@ -40,44 +51,33 @@ A stdio-based Model Context Protocol (MCP) server that provides access to Gravat
 
    This runs the OpenAPI Generator Docker image and synchronizes the generated `openapi_client` into `src/openapi_client`.
 
-4. **Configure access token**
-
-   Create a `config.json` in the project root (or set the `GRAVATAR_CONFIG_PATH` environment variable) with your Gravatar API token:
-
-   ```json
-   {
-     "access_token": "YOUR_GRAVATAR_API_TOKEN"
-   }
-   ```
-
 ## Running the MCP Server
 
 You can start the server directly as a module:
 
 ```bash
-# Ensure src/ is on PYTHONPATH
-export PYTHONPATH="$PWD/src"
-
 # Run the MCP server
 uv run -m mcp_server_gravatar
 ```
 
-Or, after installation, use the console script:
 
-```bash
-pip install -e .
-mcp-server-gravatar
-```
+## Debugging with MCP Inspector
 
-The server will listen on stdio and respond to MCP `list_tools` and `call_tool` requests.
+You can use the MCP Inspector to trace and debug prompt and tool executions. For example:
 
-## Testing
+1. Run Inspector:
+   ```bash
+   npx @modelcontextprotocol/inspector uv run mcp-server-gravatar
+   Starting MCP inspector...
+   ⚙️ Proxy server listening on port 6277
+   🔍 MCP Inspector is up and running at http://127.0.0.1:6274
+   ```
+2. Open the Inspector UI in your browser
+   - In the example above: `http://localhost:6274`.
 
-Run the unit tests with:
+For more details, see the official docs:  
+https://modelcontextprotocol.io/docs/tools/inspector
 
-```bash
-uv run pytest -q
-```
 
 ## Makefile Targets
 
@@ -86,8 +86,6 @@ uv run pytest -q
 
 ## Environment Variables
 
-- `GRAVATAR_CONFIG_PATH` — path to your `config.json` (default: `./config.json`)
+- `GRAVATAR_API_TOKEN` — your Gravatar API key
 
 ---
-
-© 2025 Andrew Montgomery. Licensed under MIT.
