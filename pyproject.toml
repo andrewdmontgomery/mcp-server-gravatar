@@ -16,7 +16,7 @@ dependencies = [
 # tell the build backend where to find your package
 packages = [
   { include = "mcp_server_gravatar", from = "src" },
-  { include = "openapi_client", from = "gravatar_api_client" },
+  { include = "openapi_client", from = "src" },
 ]
 
 

@@ -11,7 +11,9 @@ DOCKER_IMAGE = openapitools/openapi-generator-cli
 
 # Target to generate the Python client using Docker
 generate:
-	docker run --rm -v $(PWD):/local $(DOCKER_IMAGE) generate -i /local/$(SPEC_FILE) -g python -o /local/$(GENERATED_DIR)
+	@docker run --rm -v $(PWD):/local $(DOCKER_IMAGE) generate -i /local/$(SPEC_FILE) -g python -o /local/$(GENERATED_DIR)
+	@mkdir -p src/openapi_client
+	@rsync -a --delete $(GENERATED_DIR)/openapi_client/ src/openapi_client/
 
 # Target to clean up generated files
 clean:
