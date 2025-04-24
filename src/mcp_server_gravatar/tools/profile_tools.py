@@ -1,5 +1,38 @@
-from typing import overload, Literal, Union, Any
+import json
+from typing import overload, Literal, Union, Any, Protocol
 from mcp.server.fastmcp import FastMCP
+
+
+class ProfileToolProviding(Protocol):
+    async def get_profile_by_email(self, email: str) -> dict[str, Any]: ...
+    async def get_profile_by_hash(self, hash: str) -> dict[str, Any]: ...
+
+    async def get_profile_field_with_hash(
+        self,
+        profileIdentifier: str,
+        field: Literal[
+            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+            "location", "description", "job_title", "company",
+            "verified_accounts", "pronunciation", "pronouns", "timezone",
+            "languages", "first_name", "last_name", "is_organization",
+            "header_image", "background_color", "links", "interests", "payments",
+            "contact_info", "gallery", "number_verified_accounts",
+            "last_profile_edit", "registration_date"
+        ]
+    ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]: ...
+
+    async def get_profile_field_with_email(
+        self,
+        email: str,
+        field: Literal[
+            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
+            "location", "description", "job_title", "company",
+            "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+            "header_image", "background_color", "links", "interests", "payments",
+            "contact_info", "gallery", "number_verified_accounts",
+            "last_profile_edit", "registration_date"
+        ]
+    ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]: ...
 
 
 class ProfileTools:
@@ -193,3 +226,22 @@ class ProfileTools:
             ]
         ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
             return await self.get_profile_field_with_email(email, field)
+
+    def register_resources(self, mcp: FastMCP):
+        @mcp.resource(
+            uri="profiles://profileIdentifier/{profileIdentifier}",
+            name="Get Profile by ID",
+            description="Returns a profile object as json",
+            mime_type="application/json")
+        async def get_profile(profileIdentifier: str) -> str:
+            profile = await self.get_profile_by_hash(profileIdentifier)
+            return json.dumps(profile)
+
+        @mcp.resource(
+            uri="profiles://email/{email}",
+            name="Get Profile by email",
+            description="Returns a profile object as json",
+            mime_type="application/json")
+        async def get_profile(email: str) -> str:
+            profile = await self.get_profile_by_email(email)
+            return json.dumps(profile)
