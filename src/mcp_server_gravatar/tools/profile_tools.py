@@ -14,7 +14,7 @@ class ProfileTools:
         Fetch Gravatar profile for a given email address.
         """
         profile_id = self.client.hash_email(email)
-        profile = self.client.profiles_api.get_profile_by_id(profile_id)
+        profile = self.client.get_profile_by_id(profile_id)
         if hasattr(profile, "to_dict"):
             return profile.to_dict()
         return profile
@@ -23,7 +23,7 @@ class ProfileTools:
         """
         Fetch Gravatar profile for a given SHA256 hash.
         """
-        profile = self.client.profiles_api.get_profile_by_id(hash)
+        profile = self.client.get_profile_by_id(hash)
         if hasattr(profile, "to_dict"):
             return profile.to_dict()
         return profile

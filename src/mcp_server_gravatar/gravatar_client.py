@@ -5,7 +5,7 @@ from typing import Optional, List
 from openapi_client import Configuration, ApiClient
 from openapi_client.api.profiles_api import ProfilesApi
 from openapi_client.api.avatars_api import AvatarsApi
-from openapi_client.models import Avatar
+from openapi_client.models import Avatar, Profile
 
 GRAVATAR_API_TOKEN = os.environ.get("GRAVATAR_API_TOKEN")
 USER_AGENT = "gravatar-mcp/1.0"
@@ -32,6 +32,12 @@ class GravatarClient:
         selected_email_hash: str = None,
     ) -> List[Avatar]:
         return self.avatars_api.get_avatars(selected_email_hash=selected_email_hash)
+
+    def get_profile_by_id(
+        self,
+        profile_identifier: str,
+    ) -> Profile:
+        return self.profiles_api.get_profile_by_id(profile_identifier=profile_identifier)
 
     @staticmethod
     def hash_email(email: str) -> str:
