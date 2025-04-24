@@ -3,38 +3,6 @@ from typing import overload, Literal, Union, Any, Protocol
 from mcp.server.fastmcp import FastMCP
 
 
-class ProfileToolProviding(Protocol):
-    async def get_profile_by_email(self, email: str) -> dict[str, Any]: ...
-    async def get_profile_by_hash(self, hash: str) -> dict[str, Any]: ...
-
-    async def get_profile_field_with_hash(
-        self,
-        profileIdentifier: str,
-        field: Literal[
-            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-            "location", "description", "job_title", "company",
-            "verified_accounts", "pronunciation", "pronouns", "timezone",
-            "languages", "first_name", "last_name", "is_organization",
-            "header_image", "background_color", "links", "interests", "payments",
-            "contact_info", "gallery", "number_verified_accounts",
-            "last_profile_edit", "registration_date"
-        ]
-    ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]: ...
-
-    async def get_profile_field_with_email(
-        self,
-        email: str,
-        field: Literal[
-            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-            "location", "description", "job_title", "company",
-            "pronunciation", "pronouns", "timezone", "first_name", "last_name",
-            "header_image", "background_color", "links", "interests", "payments",
-            "contact_info", "gallery", "number_verified_accounts",
-            "last_profile_edit", "registration_date"
-        ]
-    ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]: ...
-
-
 class ProfileTools:
     def __init__(self, client):
         """
