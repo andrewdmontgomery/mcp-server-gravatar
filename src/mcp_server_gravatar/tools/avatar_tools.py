@@ -21,10 +21,10 @@ class AvatarTools:
             list[dict[str, Any]]: A list of avatar metadata dictionaries.
         """
         if selected_email_hash is not None:
-            avatars = self.client.avatars_api.get_avatars(
+            avatars = self.client.get_avatars(
                 selected_email_hash=selected_email_hash)
         else:
-            avatars = self.client.avatars_api.get_avatars()
+            avatars = self.client.get_avatars()
         result = []
         for avatar in avatars:
             if hasattr(avatar, "model_dump"):

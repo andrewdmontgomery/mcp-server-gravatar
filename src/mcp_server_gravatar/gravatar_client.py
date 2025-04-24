@@ -1,10 +1,11 @@
 import os
 import json
 import hashlib
-from typing import Optional
+from typing import Optional, List
 from openapi_client import Configuration, ApiClient
 from openapi_client.api.profiles_api import ProfilesApi
 from openapi_client.api.avatars_api import AvatarsApi
+from openapi_client.models import Avatar
 
 GRAVATAR_API_TOKEN = os.environ.get("GRAVATAR_API_TOKEN")
 USER_AGENT = "gravatar-mcp/1.0"
@@ -25,6 +26,12 @@ class GravatarClient:
 
         self.profiles_api = ProfilesApi(self._api_client)
         self.avatars_api = AvatarsApi(self._api_client)
+
+    def get_avatars(
+        self,
+        selected_email_hash: str = None,
+    ) -> List[Avatar]:
+        return self.avatars_api.get_avatars(selected_email_hash=selected_email_hash)
 
     @staticmethod
     def hash_email(email: str) -> str:
