@@ -83,10 +83,23 @@ class AvatarTools:
         return images
 
     def register_tools(self, mcp: FastMCP):
-        @mcp.tool(name="get_avatars")
+        @mcp.tool(
+            name="get_avatars",
+            description="Fetch all avatars"
+        )
         async def get_avatars(selected_email_hash: str | None = None) -> list[dict[str, Any]]:
             return await self.get_avatars(selected_email_hash)
 
-        @mcp.tool(name="get_selected_avatar_as_image")
-        async def get_selected_avatar_as_image(email: str | None = None) -> list[bytes]:
+        @mcp.tool(
+            name="get_avatars_as_images",
+            description="Fetch all avatars as images"
+        )
+        async def get_avatars_as_images(selected_email_hash: str | None = None) -> list[Image]:
+            return await self.get_avatars_as_images(selected_email_hash)
+
+        @mcp.tool(
+            name="get_selected_avatar_as_image",
+            description="Fetch the selected avatar as an image"
+        )
+        async def get_selected_avatar_as_image(email: str | None = None) -> list[Image]:
             return await self.get_selected_avatar_as_image(email)
