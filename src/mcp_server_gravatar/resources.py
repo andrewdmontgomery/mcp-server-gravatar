@@ -1,6 +1,6 @@
 import json
 from mcp.server.fastmcp import FastMCP
-from .tools import profile_tools, avatar_tools
+from .tools import profile_tools
 
 
 def register_resources(mcp: FastMCP):
