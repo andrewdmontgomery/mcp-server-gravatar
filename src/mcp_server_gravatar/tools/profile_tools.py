@@ -32,7 +32,7 @@ class ProfileTools:
     @overload
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal[
             "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
             "location", "description", "job_title", "company",
@@ -44,21 +44,21 @@ class ProfileTools:
     @overload
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal["is_organization"]
     ) -> bool: ...
 
     @overload
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal["number_verified_accounts"]
     ) -> int: ...
 
     @overload
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal["verified_accounts", "languages",
                        "links", "interests", "gallery"]
     ) -> list[dict[str, Any]]: ...
@@ -66,13 +66,13 @@ class ProfileTools:
     @overload
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal["payments", "contact_info"]
     ) -> dict[str, Any]: ...
 
     async def get_profile_field_with_hash(
         self,
-        profileIdentifier: str,
+        profile_identifier: str,
         field: Literal[
             "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
             "location", "description", "job_title", "company",
@@ -86,7 +86,7 @@ class ProfileTools:
         """
         Fetch a specific field from a Gravatar profile by its SHA256 identifier.
         """
-        profile = await self.get_profile_by_hash(profileIdentifier)
+        profile = await self.get_profile_by_hash(profile_identifier)
         return profile.get(field)
 
     @overload
@@ -145,8 +145,8 @@ class ProfileTools:
         """
         Fetch a specific field from a Gravatar profile by email address.
         """
-        profile_hash = self.client.hash_email(email)
-        return await self.get_profile_field_with_hash(profile_hash, field)
+        profile_identifier = self.client.hash_email(email)
+        return await self.get_profile_field_with_hash(profile_identifier, field)
 
     def register_tools(self, mcp: FastMCP):
         """
