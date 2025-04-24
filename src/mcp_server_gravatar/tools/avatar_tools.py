@@ -1,4 +1,5 @@
 import httpx
+import json
 from typing import Any
 from mcp.server.fastmcp import FastMCP, Image
 
@@ -39,7 +40,7 @@ class AvatarTools:
 
     async def get_avatars_as_images(self, selected_email_hash: str | None = None) -> list[Image]:
         """
-        Fetch and return the raw image bytes for all avatars.
+        Fetch and return the images for all avatars.
         """
         avatars = await self.get_avatars(selected_email_hash=selected_email_hash)
         images: list[Image] = []
@@ -54,7 +55,38 @@ class AvatarTools:
                 images.append(Image(data=response.content))
         return images
 
+    async def get_avatars_as_bytes(self, selected_email_hash: str | None = None) -> list[bytes]:
+        """
+        Fetch and return the raw image bytes for all avatars.
+        """
+        avatars = await self.get_avatars(selected_email_hash=selected_email_hash)
+        images: list[bytes] = []
+        # TODO: Use a proper CA for SSL certificate validation
+        async with httpx.AsyncClient(verify=False) as client_http:
+            for avatar in avatars:
+                url = avatar.get("image_url")
+                if not url:
+                    continue
+                response = await client_http.get(url)
+                response.raise_for_status()
+                images.append(response.content)
+        return images
+
     async def get_selected_avatar_as_image(self, email: str | None = None) -> list[Image]:
+        """
+        Fetch and return images for the selected avatar.
+
+        Args:
+            email: User's email address to determine which avatar is selected.
+
+        Returns:
+            list[Image]: A single-element list containing the selected avatar image.
+        """
+        avatars_as_bytes = self.get_selected_avatar_as_bytes(email=email)
+        avatars = map(lambda bytes: Image(data=bytes), avatars_as_bytes)
+        return avatars
+
+    async def get_selected_avatar_as_bytes(self, email: str | None = None) -> list[bytes]:
         """
         Fetch and return the raw image bytes for the selected avatar.
 
@@ -67,7 +99,7 @@ class AvatarTools:
         # Reuse the metadata tool to get avatar URLs
         selected_hash = self.client.hash_email(email)
         avatars = await self.get_avatars(selected_email_hash=selected_hash)
-        images: list[Image] = []
+        images: list[bytes] = []
         # TODO: Use a proper CA for SSL certificate validation
         async with httpx.AsyncClient(verify=False) as client_http:
             for avatar in avatars:
@@ -78,7 +110,7 @@ class AvatarTools:
                     continue
                 response = await client_http.get(url)
                 response.raise_for_status()
-                images.append(Image(data=response.content))
+                images.append(response.content)
                 break
         return images
 
@@ -103,3 +135,33 @@ class AvatarTools:
         )
         async def get_selected_avatar_as_image(email: str | None = None) -> list[Image]:
             return await self.get_selected_avatar_as_image(email)
+
+    def register_resources(self, mcp: FastMCP):
+        @mcp.resource(
+            uri="avatars://me",
+            name="Get all avatars",
+            description="Returns the avatars object as json for the authenticated user",
+            mime_type="application/json"
+        )
+        async def get_avatars() -> str:
+            avatars = await self.get_avatars()
+            return json.dumps(avatars)
+
+        @mcp.resource(
+            uri="avatars://me/images/{index}",
+            name="Get avatars at index as image",
+            description="Returns an avatar of the authenticated user as an image with a given index",
+            mime_type="image/png"
+        )
+        async def get_avatar_at_index(index: int) -> bytes:
+
+            avatars = await self.get_avatars()
+            # Guard against invalid index
+            if index < 0 or index >= len(avatars):
+                raise IndexError(
+                    f"Avatar index {index} is out of range (0 to {len(avatars)-1})")
+
+            url = avatars[index]["image_url"]
+            # TODO: handle SSL verification
+            data = (await httpx.AsyncClient(verify=False).get(url)).content
+            return data

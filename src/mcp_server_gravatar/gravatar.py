@@ -17,6 +17,7 @@ def register_tools(mcp: FastMCP):
 
 def register_resources(mcp: FastMCP):
     profile_tools.register_resources(mcp)
+    avatar_tools.register_resources(mcp)
 
 
 def serve():
