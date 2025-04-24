@@ -1,5 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from .tools import profile_tools, avatar_tools
+from .resources import register_resources
 
 # Initialize FastMCP server
 mcp = FastMCP("gravatar")
@@ -13,4 +14,5 @@ def register_tools(mcp: FastMCP):
 def serve():
     # Run the MCP server over stdio
     register_tools(mcp)
+    register_resources(mcp)
     mcp.run(transport="stdio")
