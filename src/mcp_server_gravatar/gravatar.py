@@ -1,14 +1,23 @@
 from mcp.server.fastmcp import FastMCP
-from .tools import profile_tools, avatar_tools
-from .resources import register_resources
+from .tools.avatar_tools import AvatarTools
+from .tools.profile_tools import ProfileTools
+from . import gravatar_client
 
 # Initialize FastMCP server
 mcp = FastMCP("gravatar")
+client = gravatar_client.client
+profile_tools = ProfileTools(client=client)
+avatar_tools = AvatarTools(client=client)
 
 
 def register_tools(mcp: FastMCP):
     profile_tools.register_tools(mcp)
     avatar_tools.register_tools(mcp)
+
+
+def register_resources(mcp: FastMCP):
+    profile_tools.register_resources(mcp)
+    avatar_tools.register_resources(mcp)
 
 
 def serve():
