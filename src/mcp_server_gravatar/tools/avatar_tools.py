@@ -1,6 +1,6 @@
 import httpx
 from typing import Any
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
 
 
 class AvatarTools:
@@ -37,7 +37,24 @@ class AvatarTools:
                 result.append(avatar)
         return result
 
-    async def get_selected_avatar_as_image(self, email: str | None = None) -> list[bytes]:
+    async def get_avatars_as_images(self, selected_email_hash: str | None = None) -> list[Image]:
+        """
+        Fetch and return the raw image bytes for all avatars.
+        """
+        avatars = await self.get_avatars(selected_email_hash=selected_email_hash)
+        images: list[Image] = []
+        # TODO: Use a proper CA for SSL certificate validation
+        async with httpx.AsyncClient(verify=False) as client_http:
+            for avatar in avatars:
+                url = avatar.get("image_url")
+                if not url:
+                    continue
+                response = await client_http.get(url)
+                response.raise_for_status()
+                images.append(Image(data=response.content))
+        return images
+
+    async def get_selected_avatar_as_image(self, email: str | None = None) -> list[Image]:
         """
         Fetch and return the raw image bytes for the selected avatar.
 
@@ -50,7 +67,7 @@ class AvatarTools:
         # Reuse the metadata tool to get avatar URLs
         selected_hash = self.client.hash_email(email)
         avatars = await self.get_avatars(selected_email_hash=selected_hash)
-        images: list[bytes] = []
+        images: list[Image] = []
         # TODO: Use a proper CA for SSL certificate validation
         async with httpx.AsyncClient(verify=False) as client_http:
             for avatar in avatars:
@@ -61,7 +78,7 @@ class AvatarTools:
                     continue
                 response = await client_http.get(url)
                 response.raise_for_status()
-                images.append(response.content)
+                images.append(Image(data=response.content))
                 break
         return images
 
