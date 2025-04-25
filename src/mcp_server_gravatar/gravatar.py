@@ -20,8 +20,13 @@ def register_resources(mcp: FastMCP):
     avatar_tools.register_resources(mcp)
 
 
+def register_prompts(mcp: FastMCP):
+    profile_tools.register_prompts(mcp)
+
+
 def serve():
     # Run the MCP server over stdio
     register_tools(mcp)
     register_resources(mcp)
+    register_prompts(mcp)
     mcp.run(transport="stdio")

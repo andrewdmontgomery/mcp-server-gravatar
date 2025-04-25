@@ -1,6 +1,8 @@
 import json
+import httpx
 from typing import overload, Literal, Union, Any, Protocol
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Context
+from mcp.server.fastmcp.prompts.base import Message, UserMessage
 
 
 class ProfileTools:
@@ -219,3 +221,47 @@ class ProfileTools:
         async def get_profile(email: str) -> str:
             profile = await self.get_profile_by_email(email)
             return json.dumps(profile)
+
+    def register_prompts(self, mcp: FastMCP):
+
+        @mcp.prompt()
+        async def summarize_gravatar_profile(email: str, ctx: Context) -> list[Message]:
+            """
+            Read a Gravatar profile via MCP resource and summarize it
+            Note: FastMCP doesn't currently support passing the context to a prompt (https://github.com/jlowin/fastmcp/issues/134)
+            """
+            # Log the start of the prompt execution
+            await ctx.debug(f"summarize_gravatar_profile called with email={email}")
+
+            # Read the profile JSON from the MCP resource
+            contents = await ctx.read_resource(f"profiles://email/{email}")
+            if not contents:
+                await ctx.error(f"No profile found for email {email}")
+                profile_json = "{}"
+            else:
+                profile_json = contents[0].content
+
+            profile_data = json.loads(profile_json)
+            # Build messages for the model
+            return [
+                UserMessage(
+                    f"You are a professional assistant skilled at writing concise, engaging summaries of user profiles.\n\n"
+                    f"Here is the profile JSON data:\n{profile_data}\n\n"
+                    f"Next, extract the fields display_name, location, description, job_title, company, timezone, languages, interests, and verified_accounts.\n"
+                    f"Finally, produce a one- to two-paragraph professional summary, using natural, flowing sentences without bullet points."
+                )
+            ]
+
+        @mcp.prompt()
+        async def summarize_gravatar_profile_via_tool(email: str) -> list[Message]:
+            """
+            Read a Gravatar profile using the get_profile tool and summarize it
+            """
+            return [
+                UserMessage(
+                    f"You are a professional assistant skilled at writing concise, engaging summaries of user profiles.\n\n"
+                    f"First, call the get_profile_by_email tool with argument email='{email}' to fetch the raw profile JSON.\n"
+                    f"Next, extract the fields display_name, location, description, job_title, company, timezone, languages, interests, and verified_accounts.\n"
+                    f"Finally, produce a one- to two-paragraph professional summary, using natural, flowing sentences without bullet points."
+                ),
+            ]
