@@ -1,4 +1,5 @@
 import json
+import httpx
 from typing import overload, Literal, Union, Any, Protocol
 from mcp.server.fastmcp import FastMCP, Context
 from mcp.server.fastmcp.prompts.base import UserMessage
@@ -229,6 +230,6 @@ class ProfileTools:
             """
             return [
                 UserMessage(
-                    f"You are an assistant that summarizes Gravatar profiles.  Use data from the profile at 'profiles://email/{email}'.  If the profile contains `verified_accounts`, visit the `url` for each account.  Include what you find there in your summary. "
+                    f"You are an assistant that summarizes Gravatar profiles.  Use data from the profile at 'profiles://email/{email}'.  The summary must be professional and no more than one paragraph in length."
                 )
             ]
