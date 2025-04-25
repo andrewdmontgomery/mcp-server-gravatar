@@ -209,7 +209,7 @@ class ProfileTools:
             Fetches the raw text content at the given URL.
             """
             async with httpx.AsyncClient(verify=False) as client_http:
-                response = await client_http.get(url, follow_redirects=True)
+                response = await client_http.get(url)
                 response.raise_for_status()
                 return response.text
 
