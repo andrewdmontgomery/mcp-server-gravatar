@@ -228,6 +228,7 @@ class ProfileTools:
         async def summarize_gravatar_profile(email: str, ctx: Context) -> list[Message]:
             """
             Read a Gravatar profile via MCP resource and summarize it
+            Note: FastMCP doesn't currently support passing the context to a prompt (https://github.com/jlowin/fastmcp/issues/134)
             """
             # Log the start of the prompt execution
             await ctx.debug(f"summarize_gravatar_profile called with email={email}")
