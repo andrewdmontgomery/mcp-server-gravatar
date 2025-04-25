@@ -223,13 +223,25 @@ class ProfileTools:
             return json.dumps(profile)
 
     def register_prompts(self, mcp: FastMCP):
+
         @mcp.prompt()
-        def summarize_gravatar_profile(email: str) -> str:
+        async def summarize_gravatar_profile(email: str, ctx: Context) -> list[UserMessage]:
             """
-            Prompt that instructs the model to summarize a Gravatar profile.
+            Read a Gravatar profile via MCP resource and summarize it
             """
+            # Log the start of the prompt execution
+            await ctx.debug(f"summarize_gravatar_profile called with email={email}")
+
+            # Read the profile JSON from the MCP resource
+            contents = await ctx.read_resource(f"profiles://email/{email}")
+            if not contents:
+                await ctx.error(f"No profile found for email {email}")
+                profile_json = "{}"
+            else:
+                profile_json = contents[0].content
+
+            # Build messages for the model
             return [
                 UserMessage(
-                    f"You are an assistant that summarizes Gravatar profiles.  Use data from the profile at 'profiles://email/{email}'.  The summary must be professional and no more than one paragraph in length."
-                )
+                    f"You are an assistant that summarizes Gravatar profiles. Here is the profile JSON data:\n{profile_json}\n\nPlease provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
             ]
