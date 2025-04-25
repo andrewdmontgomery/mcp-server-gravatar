@@ -11,6 +11,40 @@ class AvatarTools:
         """
         self.client = client
 
+    async def get_avatar_by_id(self, avatar_identifier: str) -> bytes:
+        """
+        Fetch an avatar as raw data using its avatar_identifier hash
+        """
+        if not avatar_identifier:
+            raise ValueError("avatar_identifier must not be empty")
+        async with httpx.AsyncClient(verify=False) as client_http:
+            avatar_url = "https://gravatar.com/avatar/{avatar_identifier}"
+            response = await client_http.get(avatar_url)
+            response.raise_for_status()
+            return response.content
+
+    async def get_avatar_by_id_as_image(self, avatar_identifier: str) -> Image:
+        """
+        Fetch an avatar image using its avatar_identifier hash
+        """
+        avatar = await self.get_avatar_by_id(avatar_identifier)
+        return Image(avatar)
+
+    async def get_avatar_by_email(self, email: str) -> bytes:
+        """
+        Fetch an avatar as raw data using its email address
+        """
+        avatar_identifier = self.client.hash_email(email)
+        avatar = await self.get_avatar_by_id(avatar_identifier)
+        return avatar
+
+    async def get_avatar_by_email_as_image(self, email: str) -> Image:
+        """
+        Fetch an avatar image using its email address
+        """
+        avatar = await self.get_avatar_by_email(email)
+        return Image(avatar)
+
     async def get_avatars(self, selected_email_hash: str | None = None) -> list[dict[str, Any]]:
         """
         List all avatars for the authenticated user in JSON-friendly format.
@@ -116,18 +150,28 @@ class AvatarTools:
 
     def register_tools(self, mcp: FastMCP):
         @mcp.tool(
+            name="get_avatar_by_id_as_image",
+            description="Fetch the avatar for a given id as an image"
+        )
+        async def get_avatar_by_id_as_image(hash: str) -> Image:
+            avatar = await self.get_avatar_by_id_as_image(hash)
+            return avatar
+
+        @mcp.tool(
             name="get_avatars",
             description="Fetch all avatars"
         )
         async def get_avatars(selected_email_hash: str | None = None) -> list[dict[str, Any]]:
-            return await self.get_avatars(selected_email_hash)
+            avatars = await self.get_avatars(selected_email_hash)
+            return avatars
 
         @mcp.tool(
             name="get_avatars_as_images",
             description="Fetch all avatars as images"
         )
         async def get_avatars_as_images(selected_email_hash: str | None = None) -> list[Image]:
-            return await self.get_avatars_as_images(selected_email_hash)
+            avatars = await self.get_avatars_as_images(selected_email_hash)
+            return avatars
 
         @mcp.tool(
             name="get_selected_avatar_as_image",
@@ -137,6 +181,26 @@ class AvatarTools:
             return await self.get_selected_avatar_as_image(email)
 
     def register_resources(self, mcp: FastMCP):
+        @mcp.resource(
+            uri="avatar://avatar_identifier/{avatar_identifier}",
+            name="Get avatar for id as raw data",
+            description="Returns an avatar for a given id",
+            mime_type="image/png"
+        )
+        async def get_avatar_by_id(avatar_identifier: str) -> bytes:
+            avatar = await self.get_avatar_by_id(avatar_identifier=avatar_identifier)
+            return avatar
+
+        @mcp.resource(
+            uri="avatar://email/{email}",
+            name="Get avatar for email as raw data",
+            description="Returns an avatar for a given email address",
+            mime_type="image/png"
+        )
+        async def get_avatar_by_email(email: str) -> bytes:
+            avatar = await self.get_avatar_by_email(email)
+            return avatar
+
         @mcp.resource(
             uri="avatars://me",
             name="Get all avatars",
