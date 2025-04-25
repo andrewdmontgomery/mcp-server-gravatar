@@ -245,7 +245,11 @@ class ProfileTools:
             # Build messages for the model
             return [
                 UserMessage(
-                    f"You are an assistant that summarizes Gravatar profiles. Here is the profile JSON data:\n{profile_data}\n\nPlease provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
+                    f"You are a professional assistant skilled at writing concise, engaging summaries of user profiles.\n\n"
+                    f"Here is the profile JSON data:\n{profile_data}\n\n"
+                    f"Next, extract the fields display_name, location, description, job_title, company, timezone, languages, interests, and verified_accounts.\n"
+                    f"Finally, produce a one- to two-paragraph professional summary, using natural, flowing sentences without bullet points."
+                )
             ]
 
         @mcp.prompt()
@@ -255,5 +259,9 @@ class ProfileTools:
             """
             return [
                 UserMessage(
-                    f"You are an assistant that summarizes Gravatar profiles. Fetch the Gravatar Profile for this email address:\n{email}\n\nUsing that profile, please provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
+                    f"You are a professional assistant skilled at writing concise, engaging summaries of user profiles.\n\n"
+                    f"First, call the get_profile_by_email tool with argument email='{email}' to fetch the raw profile JSON.\n"
+                    f"Next, extract the fields display_name, location, description, job_title, company, timezone, languages, interests, and verified_accounts.\n"
+                    f"Finally, produce a one- to two-paragraph professional summary, using natural, flowing sentences without bullet points."
+                ),
             ]
