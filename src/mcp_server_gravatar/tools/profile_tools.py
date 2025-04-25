@@ -2,7 +2,7 @@ import json
 import httpx
 from typing import overload, Literal, Union, Any, Protocol
 from mcp.server.fastmcp import FastMCP, Context
-from mcp.server.fastmcp.prompts.base import UserMessage
+from mcp.server.fastmcp.prompts.base import Message, UserMessage
 
 
 class ProfileTools:
@@ -225,7 +225,7 @@ class ProfileTools:
     def register_prompts(self, mcp: FastMCP):
 
         @mcp.prompt()
-        async def summarize_gravatar_profile(email: str, ctx: Context) -> list[UserMessage]:
+        async def summarize_gravatar_profile(email: str, ctx: Context) -> list[Message]:
             """
             Read a Gravatar profile via MCP resource and summarize it
             """
@@ -240,8 +240,9 @@ class ProfileTools:
             else:
                 profile_json = contents[0].content
 
+            profile_data = json.loads(profile_json)
             # Build messages for the model
             return [
                 UserMessage(
-                    f"You are an assistant that summarizes Gravatar profiles. Here is the profile JSON data:\n{profile_json}\n\nPlease provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
+                    f"You are an assistant that summarizes Gravatar profiles. Here is the profile JSON data:\n{profile_data}\n\nPlease provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
             ]
