@@ -183,7 +183,7 @@ class AvatarTools:
     def register_resources(self, mcp: FastMCP):
         @mcp.resource(
             uri="avatar://avatar_identifier/{avatar_identifier}",
-            name="Get avatar for id as raw data",
+            name="Get avatar for id",
             description="Returns an avatar for a given id",
             mime_type="image/png"
         )
@@ -193,7 +193,7 @@ class AvatarTools:
 
         @mcp.resource(
             uri="avatar://email/{email}",
-            name="Get avatar for email as raw data",
+            name="Get avatar for email",
             description="Returns an avatar for a given email address",
             mime_type="image/png"
         )
@@ -213,7 +213,7 @@ class AvatarTools:
 
         @mcp.resource(
             uri="avatars://me/images/{index}",
-            name="Get avatars at index as image",
+            name="Get avatars at index",
             description="Returns an avatar of the authenticated user as an image with a given index",
             mime_type="image/png"
         )
