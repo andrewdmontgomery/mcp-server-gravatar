@@ -203,16 +203,6 @@ class ProfileTools:
         ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
             return await self.get_profile_field_with_email(email, field)
 
-        @mcp.tool()
-        async def visit_verified_account_url(url: str) -> str:
-            """
-            Fetches the raw text content at the given URL.
-            """
-            async with httpx.AsyncClient(verify=False) as client_http:
-                response = await client_http.get(url)
-                response.raise_for_status()
-                return response.text
-
     def register_resources(self, mcp: FastMCP):
         @mcp.resource(
             uri="profiles://profileIdentifier/{profileIdentifier}",
@@ -272,8 +262,6 @@ class ProfileTools:
                     f"You are a professional assistant skilled at writing concise, engaging summaries of user profiles.\n\n"
                     f"First, call the get_profile_by_email tool with argument email='{email}' to fetch the raw profile JSON.\n"
                     f"Next, extract the fields display_name, location, description, job_title, company, timezone, languages, interests, and verified_accounts.\n"
-                    f"If any verfied_account entries are listed, extract the `url` from each entry.  Call the `visit_verified_account_url` tool to fetch that page’s contents, \n"
-                    f"and include those contents when crafting your summary.\n"
                     f"Finally, produce a one- to two-paragraph professional summary, using natural, flowing sentences without bullet points."
                 ),
             ]
