@@ -1,6 +1,7 @@
 import json
 from typing import overload, Literal, Union, Any, Protocol
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Context
+from mcp.server.fastmcp.prompts.base import UserMessage
 
 
 class ProfileTools:
@@ -219,3 +220,15 @@ class ProfileTools:
         async def get_profile(email: str) -> str:
             profile = await self.get_profile_by_email(email)
             return json.dumps(profile)
+
+    def register_prompts(self, mcp: FastMCP):
+        @mcp.prompt()
+        def summarize_gravatar_profile(email: str) -> str:
+            """
+            Prompt that instructs the model to summarize a Gravatar profile.
+            """
+            return [
+                UserMessage(
+                    f"You are an assistant that summarizes Gravatar profiles.  Use data from the profile at 'profiles://email/{email}'.  If the profile contains `verified_accounts`, visit the `url` for each account.  Include what you find there in your summary. "
+                )
+            ]
