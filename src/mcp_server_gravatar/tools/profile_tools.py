@@ -247,3 +247,13 @@ class ProfileTools:
                 UserMessage(
                     f"You are an assistant that summarizes Gravatar profiles. Here is the profile JSON data:\n{profile_data}\n\nPlease provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
             ]
+
+        @mcp.prompt()
+        async def summarize_gravatar_profile_via_tool(email: str) -> list[Message]:
+            """
+            Read a Gravatar profile using the get_profile tool and summarize it
+            """
+            return [
+                UserMessage(
+                    f"You are an assistant that summarizes Gravatar profiles. Fetch the Gravatar Profile for this email address:\n{email}\n\nUsing that profile, please provide a one-paragraph, professional summary of this profile, including display name, biography, location, and any links."),
+            ]
