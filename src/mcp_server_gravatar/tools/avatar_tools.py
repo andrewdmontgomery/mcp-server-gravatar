@@ -149,35 +149,35 @@ class AvatarTools:
         return images
 
     def register_tools(self, mcp: FastMCP):
-        @mcp.tool(
-            name="get_avatar_by_id_as_image",
-            description="Fetch the avatar for a given id as an image"
-        )
+        @mcp.tool()
         async def get_avatar_by_id_as_image(hash: str) -> Image:
+            """
+            Fetch the avatar for a given id as an image.
+            """
             avatar = await self.get_avatar_by_id_as_image(hash)
             return avatar
 
-        @mcp.tool(
-            name="get_avatars",
-            description="Fetch all avatars"
-        )
+        @mcp.tool()
         async def get_avatars(selected_email_hash: str | None = None) -> list[dict[str, Any]]:
+            """
+            Fetch all avatars.
+            """
             avatars = await self.get_avatars(selected_email_hash)
             return avatars
 
-        @mcp.tool(
-            name="get_avatars_as_images",
-            description="Fetch all avatars as images"
-        )
+        @mcp.tool()
         async def get_avatars_as_images(selected_email_hash: str | None = None) -> list[Image]:
+            """
+            Fetch all avatars as images.
+            """
             avatars = await self.get_avatars_as_images(selected_email_hash)
             return avatars
 
-        @mcp.tool(
-            name="get_selected_avatar_as_image",
-            description="Fetch the selected avatar as an image"
-        )
+        @mcp.tool()
         async def get_selected_avatar_as_image(email: str | None = None) -> list[Image]:
+            """
+            Fetch the selected avatar as an image.
+            """
             return await self.get_selected_avatar_as_image(email)
 
     def register_resources(self, mcp: FastMCP):
