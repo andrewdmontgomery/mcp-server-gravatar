@@ -209,19 +209,23 @@ class ProfileTools:
     def register_resources(self, mcp: FastMCP):
         @mcp.resource(
             uri="profiles://profileIdentifier/{profileIdentifier}",
-            name="Get Profile by ID",
-            description="Returns a profile object as json",
-            mime_type="application/json")
-        async def get_profile(profileIdentifier: str) -> str:
+            mime_type="application/json"
+        )
+        async def get_profile_by_id(profileIdentifier: str) -> str:
+            """
+            Returns a profile object as JSON.
+            """
             profile = await self.get_profile_by_hash(profileIdentifier)
             return json.dumps(profile)
 
         @mcp.resource(
             uri="profiles://email/{email}",
-            name="Get Profile by email",
-            description="Returns a profile object as json",
-            mime_type="application/json")
-        async def get_profile(email: str) -> str:
+            mime_type="application/json"
+        )
+        async def get_profile_by_email(email: str) -> str:
+            """
+            Returns a profile object as JSON.
+            """
             profile = await self.get_profile_by_email(email)
             return json.dumps(profile)
 
