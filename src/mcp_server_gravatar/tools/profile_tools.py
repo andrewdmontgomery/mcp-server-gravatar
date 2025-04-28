@@ -3,8 +3,8 @@ from enum import Enum
 import json
 import httpx
 from typing import overload, Literal, Union, Any, Protocol
-from mcp.server.fastmcp import FastMCP, Context
-from mcp.server.fastmcp.prompts.base import Message, UserMessage
+from fastmcp import FastMCP, Context
+from fastmcp.prompts import Message, UserMessage
 
 
 class ProfileField(Enum):
@@ -231,7 +231,6 @@ class ProfileTools:
         async def summarize_gravatar_profile(email: str, ctx: Context) -> list[Message]:
             """
             Read a Gravatar profile via MCP resource and summarize it
-            Note: FastMCP doesn't currently support passing the context to a prompt (https://github.com/jlowin/fastmcp/issues/134)
             """
             # Log the start of the prompt execution
             await ctx.debug(f"summarize_gravatar_profile called with email={email}")

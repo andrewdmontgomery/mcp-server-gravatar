@@ -1,4 +1,4 @@
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 from .tools.avatar_tools import AvatarTools
 from .tools.profile_tools import ProfileTools
 from . import gravatar_client
