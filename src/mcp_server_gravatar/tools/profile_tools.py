@@ -138,7 +138,8 @@ class ProfileTools:
         field: Literal[
             "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
             "location", "description", "job_title", "company",
-            "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+            "verified_accounts", "pronunciation", "pronouns", "timezone",
+            "languages", "first_name", "last_name", "is_organization",
             "header_image", "background_color", "links", "interests", "payments",
             "contact_info", "gallery", "number_verified_accounts",
             "last_profile_edit", "registration_date"
@@ -195,7 +196,8 @@ class ProfileTools:
             field: Literal[
                 "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
                 "location", "description", "job_title", "company",
-                "pronunciation", "pronouns", "timezone", "first_name", "last_name",
+                "verified_accounts", "pronunciation", "pronouns", "timezone",
+                "languages", "first_name", "last_name", "is_organization",
                 "header_image", "background_color", "links", "interests", "payments",
                 "contact_info", "gallery", "number_verified_accounts",
                 "last_profile_edit", "registration_date"
