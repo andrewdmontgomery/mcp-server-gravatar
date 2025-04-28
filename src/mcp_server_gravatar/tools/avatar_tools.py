@@ -183,42 +183,45 @@ class AvatarTools:
     def register_resources(self, mcp: FastMCP):
         @mcp.resource(
             uri="avatar://avatar_identifier/{avatar_identifier}",
-            name="Get avatar for id",
-            description="Returns an avatar for a given id",
             mime_type="image/png"
         )
         async def get_avatar_by_id(avatar_identifier: str) -> bytes:
+            """
+            Returns an avatar for a given id.
+            """
             avatar = await self.get_avatar_by_id(avatar_identifier=avatar_identifier)
             return avatar
 
         @mcp.resource(
             uri="avatar://email/{email}",
-            name="Get avatar for email",
-            description="Returns an avatar for a given email address",
             mime_type="image/png"
         )
         async def get_avatar_by_email(email: str) -> bytes:
+            """
+            Returns an avatar for a given email address.
+            """
             avatar = await self.get_avatar_by_email(email)
             return avatar
 
         @mcp.resource(
             uri="avatars://me",
-            name="Get all avatars",
-            description="Returns the avatars object as json for the authenticated user",
             mime_type="application/json"
         )
         async def get_avatars() -> str:
+            """
+            Returns the avatars object as JSON for the authenticated user.
+            """
             avatars = await self.get_avatars()
             return json.dumps(avatars)
 
         @mcp.resource(
             uri="avatars://me/images/{index}",
-            name="Get avatars at index",
-            description="Returns an avatar of the authenticated user as an image with a given index",
             mime_type="image/png"
         )
         async def get_avatar_at_index(index: int) -> bytes:
-
+            """
+            Returns an avatar of the authenticated user as an image with a given index.
+            """
             avatars = await self.get_avatars()
             # Guard against invalid index
             if index < 0 or index >= len(avatars):
