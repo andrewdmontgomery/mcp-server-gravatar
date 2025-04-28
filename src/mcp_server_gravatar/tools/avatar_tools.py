@@ -1,7 +1,7 @@
 import httpx
 import json
 from typing import Any
-from mcp.server.fastmcp import FastMCP, Image
+from fastmcp import FastMCP, Image
 
 
 class AvatarTools:

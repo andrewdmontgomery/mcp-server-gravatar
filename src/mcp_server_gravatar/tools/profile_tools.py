@@ -1,11 +1,44 @@
+from __future__ import annotations
+from enum import Enum
 import json
 import httpx
 from typing import overload, Literal, Union, Any, Protocol
-from mcp.server.fastmcp import FastMCP, Context
-from mcp.server.fastmcp.prompts.base import Message, UserMessage
+from fastmcp import FastMCP, Context
+from fastmcp.prompts import Message, UserMessage
+
+
+class ProfileField(Enum):
+    hash = "hash"
+    display_name = "display_name"
+    profile_url = "profile_url"
+    avatar_url = "avatar_url"
+    avatar_alt_text = "avatar_alt_text"
+    location = "location"
+    description = "description"
+    job_title = "job_title"
+    company = "company"
+    verified_accounts = "verified_accounts"
+    pronunciation = "pronunciation"
+    pronouns = "pronouns"
+    timezone = "timezone"
+    languages = "languages"
+    first_name = "first_name"
+    last_name = "last_name"
+    is_organization = "is_organization"
+    header_image = "header_image"
+    background_color = "background_color"
+    links = "links"
+    interests = "interests"
+    payments = "payments"
+    contact_info = "contact_info"
+    gallery = "gallery"
+    number_verified_accounts = "number_verified_accounts"
+    last_profile_edit = "last_profile_edit"
+    registration_date = "registration_date"
 
 
 class ProfileTools:
+
     def __init__(self, client):
         """
         Initialize with a Gravatar API client.
@@ -75,21 +108,13 @@ class ProfileTools:
     async def get_profile_field_with_hash(
         self,
         profile_identifier: str,
-        field: Literal[
-            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-            "location", "description", "job_title", "company",
-            "verified_accounts", "pronunciation", "pronouns", "timezone",
-            "languages", "first_name", "last_name", "is_organization",
-            "header_image", "background_color", "links", "interests", "payments",
-            "contact_info", "gallery", "number_verified_accounts",
-            "last_profile_edit", "registration_date"
-        ]
+        field: ProfileField
     ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
         """
         Fetch a specific field from a Gravatar profile by its SHA256 identifier.
         """
         profile = await self.get_profile_by_hash(profile_identifier)
-        return profile.get(field)
+        return profile.get(field.value)
 
     @overload
     async def get_profile_field_with_email(
@@ -135,14 +160,7 @@ class ProfileTools:
     async def get_profile_field_with_email(
         self,
         email: str,
-        field: Literal[
-            "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-            "location", "description", "job_title", "company",
-            "pronunciation", "pronouns", "timezone", "first_name", "last_name",
-            "header_image", "background_color", "links", "interests", "payments",
-            "contact_info", "gallery", "number_verified_accounts",
-            "last_profile_edit", "registration_date"
-        ]
+        field: ProfileField
     ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
         """
         Fetch a specific field from a Gravatar profile by email address.
@@ -174,15 +192,7 @@ class ProfileTools:
         )
         async def get_profile_field_with_hash(
             profileIdentifier: str,
-            field: Literal[
-                "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-                "location", "description", "job_title", "company",
-                "verified_accounts", "pronunciation", "pronouns", "timezone",
-                "languages", "first_name", "last_name", "is_organization",
-                "header_image", "background_color", "links", "interests", "payments",
-                "contact_info", "gallery", "number_verified_accounts",
-                "last_profile_edit", "registration_date"
-            ]
+            field: ProfileField
         ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
             return await self.get_profile_field_with_hash(profileIdentifier, field)
 
@@ -192,14 +202,7 @@ class ProfileTools:
         )
         async def get_profile_field_with_email(
             email: str,
-            field: Literal[
-                "hash", "display_name", "profile_url", "avatar_url", "avatar_alt_text",
-                "location", "description", "job_title", "company",
-                "pronunciation", "pronouns", "timezone", "first_name", "last_name",
-                "header_image", "background_color", "links", "interests", "payments",
-                "contact_info", "gallery", "number_verified_accounts",
-                "last_profile_edit", "registration_date"
-            ]
+            field: ProfileField
         ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
             return await self.get_profile_field_with_email(email, field)
 
@@ -228,7 +231,6 @@ class ProfileTools:
         async def summarize_gravatar_profile(email: str, ctx: Context) -> list[Message]:
             """
             Read a Gravatar profile via MCP resource and summarize it
-            Note: FastMCP doesn't currently support passing the context to a prompt (https://github.com/jlowin/fastmcp/issues/134)
             """
             # Log the start of the prompt execution
             await ctx.debug(f"summarize_gravatar_profile called with email={email}")
