@@ -1,32 +1,59 @@
+import os
+import pathlib
 from fastmcp import FastMCP
-from .tools.avatar_tools import AvatarTools
-from .tools.profile_tools import ProfileTools
-from . import gravatar_client
+from fastmcp.server.openapi import RouteMap, RouteType
+import httpx
+import yaml
+import anyio
 
 # Initialize FastMCP server
-mcp = FastMCP("gravatar")
-client = gravatar_client.client
-profile_tools = ProfileTools(client=client)
-avatar_tools = AvatarTools(client=client)
 
 
-def register_tools(mcp: FastMCP):
-    profile_tools.register_tools(mcp)
-    avatar_tools.register_tools(mcp)
+def create_mcp_server():
+    # Get the path to the OpenAPI spec file
+    current_dir = pathlib.Path(__file__).parent.parent.parent
+    openapi_path = current_dir / "openapi.yaml"
 
+    # Load OpenAPI spec as a dictionary
+    with open(openapi_path, "r") as f:
+        openapi_spec = yaml.safe_load(f)
 
-def register_resources(mcp: FastMCP):
-    profile_tools.register_resources(mcp)
-    avatar_tools.register_resources(mcp)
+    # Authentication setup
+    GRAVATAR_API_TOKEN = os.environ.get("GRAVATAR_API_TOKEN")
+    USER_AGENT = "gravatar-mcp/1.0"
 
+    # Create authenticated client
+    api_client = httpx.AsyncClient(
+        verify=False,
+        base_url="https://api.gravatar.com/v3",
+        headers={
+            "Authorization": f"Bearer {GRAVATAR_API_TOKEN}",
+            "User-Agent": USER_AGENT
+        }
+    )
 
-def register_prompts(mcp: FastMCP):
-    profile_tools.register_prompts(mcp)
+    # Create custom maps
+    custom_maps = [
+        # FastMCP doesn't support creating RESOURCE_TEMPLATE from an endpoint with query parameters
+        RouteMap(methods=["GET"],
+                 pattern=r"^/me/associated-email",
+                 route_type=RouteType.TOOL),
+    ]
+
+    # Initialize FastMCP server with OpenAPI support
+    mcp = FastMCP.from_openapi(
+        openapi_spec=openapi_spec,
+        client=api_client,
+        route_maps=custom_maps,
+        log_level="DEBUG"
+    )
+
+    return mcp
 
 
 def serve():
-    # Run the MCP server over stdio
-    register_tools(mcp)
-    register_resources(mcp)
-    register_prompts(mcp)
-    mcp.run(transport="stdio")
+    """
+    Run the MCP server.
+    """
+    mcp = create_mcp_server()
+    mcp.run()

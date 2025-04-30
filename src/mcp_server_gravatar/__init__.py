@@ -4,9 +4,8 @@ from .gravatar import serve
 
 @click.command()
 def main():
-    import asyncio
-
-    asyncio.run(serve())
+    """Run the Gravatar MCP server."""
+    serve()
 
 
 if __name__ == "__main__":

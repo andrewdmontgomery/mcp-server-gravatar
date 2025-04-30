@@ -12,10 +12,10 @@ dependencies = [
     "python-dateutil>=2.8.2",
     "typing-extensions>=4.7.1",
     "urllib3>=2.1.0,<3.0.0",
+    "pyyaml>=6.0",
 ]
 packages = [
   { include = "mcp_server_gravatar", from = "src" },
-  { include = "openapi_client",       from = "src" },
 ]
 
 
@@ -31,6 +31,5 @@ mcp-server-gravatar = "mcp_server_gravatar:main"
 [tool.hatch.build.targets.wheel]
 packages = [
   "src/mcp_server_gravatar",
-  "src/openapi_client",
 ]
 sources = { "src" = "" }
