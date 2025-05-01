@@ -172,39 +172,6 @@ class ProfileTools:
         """
         Register all profile-related tools with the MCP server.
         """
-        @mcp.tool()
-        async def get_profile_by_email(email: str) -> dict[str, Any]:
-            """
-            Fetch a profile using an email address.
-            """
-            return await self.get_profile_by_email(email)
-
-        @mcp.tool()
-        async def get_profile_by_hash(hash: str) -> dict[str, Any]:
-            """
-            Fetch a profile using the profile identifier of an email address.
-            """
-            return await self.get_profile_by_hash(hash)
-
-        @mcp.tool()
-        async def get_profile_field_with_hash(
-            profileIdentifier: str,
-            field: ProfileField
-        ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
-            """
-            Fetch a specific field from a Gravatar profile using a profile identifier.
-            """
-            return await self.get_profile_field_with_hash(profileIdentifier, field)
-
-        @mcp.tool()
-        async def get_profile_field_with_email(
-            email: str,
-            field: ProfileField
-        ) -> Union[str, bool, int, list[dict[str, Any]], dict[str, Any]]:
-            """
-            Fetch a specific field from a Gravatar profile using the profile identifier of an email address.
-            """
-            return await self.get_profile_field_with_email(email, field)
 
     def register_resources(self, mcp: FastMCP):
         @mcp.resource(
@@ -227,6 +194,28 @@ class ProfileTools:
             Returns a profile object as JSON.
             """
             profile = await self.get_profile_by_email(email)
+            return json.dumps(profile)
+
+        @mcp.resource(
+            uri="profiles://profileIdentifier/{profileIdentifier}/field/{field}",
+            mime_type="application/json"
+        )
+        async def get_profile_field_by_id(profileIdentifier: str, field: str) -> str:
+            """
+            Returns a profile object as JSON.
+            """
+            profile = await self.get_profile_field_with_hash(profile_identifier=profileIdentifier, field=ProfileField(field))
+            return json.dumps(profile)
+
+        @mcp.resource(
+            uri="profiles://email/{email}/field/{field}",
+            mime_type="application/json"
+        )
+        async def get_profile_field_by_email(email: str, field: str) -> str:
+            """
+            Returns a profile object as JSON.
+            """
+            profile = await self.get_profile_field_with_email(email=email, field=ProfileField(field))
             return json.dumps(profile)
 
     def register_prompts(self, mcp: FastMCP):
