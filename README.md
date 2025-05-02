@@ -58,19 +58,45 @@ Add this to your `claude_desktop_config.json`:
 "mcpServers": {
   "git": {
     "command": "uvx",
-    "args": ["--from", "git+https://github.com/andrewdmontgomery/mcp-server-gravatar", "mcp-server-git"]
+    "args": ["--from", "git+https://github.com/andrewdmontgomery/mcp-server-gravatar", "mcp-server-gravatar"]
   }
 }
 ```
+
+Or if you want to load a specific branch (e.g. `add/my-feature`):
+
+```json
+"mcpServers": {
+  "git": {
+    "command": "uvx",
+    "args": ["--from", "git+https://github.com/andrewdmontgomery/mcp-server-gravatar@add/my-feature", "mcp-server-gravatar"]
+  }
+}
+```
+
 </details>
 
 ## Running the MCP Server
 
-You can start the server directly as a module:
+You can start the server directly:
 
 ```bash
 # Run the MCP server
-uv run -m mcp_server_gravatar
+uv run mcp-server-gravatar
+```
+
+This can be helpful for debugging startup issues.
+
+With `uvx`, you can also start the server from the repo:
+
+```bash
+uvx --from git+https://github.com/andrewdmontgomery/mcp-server-gravatar mcp-server-gravatar
+```
+
+You can specify a branch, too (e.g. `add/my-feature`):
+
+```bash
+uvx --from git+https://github.com/andrewdmontgomery/mcp-server-gravatar@add/my-feature mcp-server-gravatar
 ```
 
 
@@ -80,12 +106,17 @@ You can use the MCP Inspector to trace and debug prompt and tool executions. For
 
 1. Run Inspector:
    ```bash
+   make inspector
+   ```
+   
+   Or manually:
+   ```bash
    npx @modelcontextprotocol/inspector uv run mcp-server-gravatar
    Starting MCP inspector...
    ⚙️ Proxy server listening on port 6277
    🔍 MCP Inspector is up and running at http://127.0.0.1:6274
    ```
-2. Open the Inspector UI in your browser
+3. Open the Inspector UI in your browser
    - In the example above: `http://localhost:6274`.
 
 For more details, see the official docs:  
