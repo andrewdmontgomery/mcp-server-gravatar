@@ -32,16 +32,18 @@ A stdio-based Model Context Protocol (MCP) server that provides access to Gravat
 
    This will install all Python dependencies specified in `pyproject.toml` into your active virtual environment.
 
-3. **Generate the OpenAPI client** (if you’ve updated `openapi.yaml`)
-    
-    [!CAUTION]
-    There are manual changes that have been applied to the generated code in order to fix issues.  If you re-generate the openapi_client, those changes should be retained._
+
+## Regenerating the OpenAPI client
+(if you’ve updated `openapi.yaml`)
+> [!CAUTION]
+> Regenerating the client will cause problems.  There are manual changes that have been applied to the generated code in order to fix issues.
+> If you re-generate the openapi_client, those changes should be retained.  Ideally these changes would by applied as a post-generation step.
 
    ```bash
    make generate
    ```
 
-   This runs the OpenAPI Generator Docker image and synchronizes the generated `openapi_client` into `src/openapi_client`.
+   This runs the OpenAPI Generator Docker image and synchronizes the generated `gravatar_api_client/openapi_client` into `src/openapi_client`.
 
 ## Configuration
 
