@@ -8,6 +8,7 @@ from openapi_client.api.avatars_api import AvatarsApi
 from openapi_client.models import Avatar, Profile
 
 GRAVATAR_API_TOKEN = os.environ.get("GRAVATAR_API_TOKEN")
+GRAVATAR_API_KEY = os.environ.get("GRAVATAR_API_KEY")
 USER_AGENT = "gravatar-mcp/1.0"
 
 
@@ -20,6 +21,7 @@ class GravatarClient:
         # Configure API client
         config = Configuration()
         config.access_token = GRAVATAR_API_TOKEN
+        config.api_key = GRAVATAR_API_KEY
 
         self._api_client = ApiClient(configuration=config)
         self._api_client.user_agent = USER_AGENT
